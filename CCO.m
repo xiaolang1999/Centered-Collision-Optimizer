@@ -1,5 +1,15 @@
-function [fbest,sbest,fbest_hist,search_hist,ave_fit,x_1st, Exploration, Exploitation]=CCO(pop,iter,lb,ub,dim,fobj);
+function [fbest,sbest,fbest_hist,search_hist]=CCO(pop,iter,lb,ub,dim,fobj);
 
+%fbest represents the optimal fitness value in the output.
+%sbest represents the optimal solution in the output.
+%fbest_hist represents the history of the best fitness value at each iteration in the output.
+%search_hist represents the set of all historical solutions in the output.
+%pop represents the population size in the input.
+%iter represents the maximum number of iterations in the output.
+%lb represents the lower bound of the search space in the input.
+%ub represents the upper bound of the search space in the input.
+%dim represents the number of problem dimensions in the input.
+%fobj represents the objective fitness function in the input.
 
 lb=lb.*ones(1,dim);
 ub=ub.*ones(1,dim);
@@ -12,11 +22,6 @@ fitness=zeros(pop,1);
 fitness_new=zeros(pop,1);
 fbest_hist=ones(1,iter);
 search_hist=zeros(pop*iter,dim);
-ave_fit=zeros(1,iter);
-x_1st=zeros(1,iter);
-diversity=zeros(1,iter);
-Exploration=zeros(1,iter);
-Exploitation=zeros(1,iter);
 
 for i = 1:pop
     fitness(i)=fobj(x(i,:));
@@ -95,18 +100,6 @@ for i = 1 : iter
 
     [fitness,class]=sort(fitness);
     x=x(class,:);
-    ave_fit(i)=mean(fitness);
-    x_1st(i)=x(1,1);
-    
-    diver=zeros(1,dim);
-    for k=1:dim
-        div=zeros(1,pop);
-        for j=1:pop
-             div(j)=abs(median(x(:,k))-x(j,k));
-        end
-        diver(k)=sum(div(j))/pop;
-    end
-    diversity(i)=sum(diver)/dim;
 
     if fitness(1)<fbest
        fbest=fitness(1);
@@ -115,8 +108,6 @@ for i = 1 : iter
     fbest_hist(i)=fbest;
     search_hist(((i-1)*pop+1:i*pop),:)=x;
 end
-    Exploration=diversity/max(diversity)*100;
-    Exploitation=(1-diversity/max(diversity))*100;
 end
 
 function Positions=initialization(SearchAgents_no,dim,ub,lb)
